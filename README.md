@@ -1,4 +1,6 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Welcome to Event Ease !
+
+Event Ease is a project dedicated to the promotion and organization of local events in urban and rural communities. Its mission is to facilitate the discovery and participation in cultural, sports, and community events at the local level.
 
 ## Getting Started
 
@@ -16,21 +18,48 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Deploy
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+This application is automatically deployed on Firebase at the following URL :
 
-## Learn More
+### Production :
 
-To learn more about Next.js, take a look at the following resources:
+- [event-ease.app](https://event-ease.app)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Preproduction :
+- [staging.event-ease.app](https://staging.event-ease.app)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Dependencies (non-exhaustive)
 
-## Deploy on Vercel
+You'll find the most relevant depencies used in this project below.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+| Column         | Column |
+| ------------------------------- | ------------------------ |
+| firebase-tools@13.25.0                   | tailwindcss@3.4.15      |
+| postcss@8.4.49           | typescript@5.6.3            |
+| eslint@8.57.1                    |             |
+
+## Recommanded plugins
+
+To boost your productivity, we recommand using the following plugins VSCode :
+
+- [ES7+ React/Reduc/React-Native snippets](https://marketplace.visualstudio.com/items?itemName=dsznajder.es7-react-js-snippets)
+- Prettier - Code formatter
+- Prettier - ESLint
+- Tailwind CSS IntelliSense
+- Pretty TypeScript Errors
+- Git Graph
+
+## Questions or Issues
+
+- If you have any questions about the film library, you can contact us directly on GitHub.
+- If you encounter any issues, you can report them [here](https://github.com/Event-Ease-Web-App/event-ease/issues).
+
+## Technology Versions
+
+Developed in:
+
+[Next.js 15.0.3](https://nextjs.org/blog/next-15)
+
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
