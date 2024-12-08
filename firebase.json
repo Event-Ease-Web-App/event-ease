@@ -1,12 +1,18 @@
 {
-  "hosting": {
-    "public": "out",
-    "ignore": [
-      "firebase.json",
-      "**/.*",
-      "**/node_modules/**"
-    ]
-  },
+  "hosting": [
+    {
+      "site": "event-ease.app",
+      "public": "out/production",
+      "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+      "target": "prod"
+    },
+    {
+      "site": "staging.event-ease.app",
+      "public": "out/staging",
+      "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+      "target": "preprod"
+    }
+  ],
   "emulators": {
     "hosting": {
       "port": 7676
