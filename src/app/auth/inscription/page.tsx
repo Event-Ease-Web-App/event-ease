@@ -44,6 +44,7 @@ const SignUp = () => {
         title: "Succès",
         description: "Vous allez recevoir un email de validation",
       });
+      setFormData({} as SignUpFormData);
       console.log("User created successfully");
     } catch (error: any) {
       if (error instanceof z.ZodError) {
