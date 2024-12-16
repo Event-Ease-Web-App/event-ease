@@ -3,7 +3,7 @@ import { useState } from "react";
 import { signUpSchema } from "@/lib/validation";
 import { z } from "zod";
 import { useToast } from "@/hooks/use-toast";
-import { SignUpFormData } from "@/types/types";
+import { SignUpFormData } from "@/types/forms";
 import axios from "axios";
 import { API_ENDPOINTS } from "@/constants/api";
 
