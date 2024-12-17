@@ -4,7 +4,7 @@ import { signUpSchema } from "@/lib/validation";
 import { z } from "zod";
 import { useToast } from "@/hooks/use-toast";
 import { SignUpFormData } from "@/types/forms";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { API_ENDPOINTS } from "@/constants/api";
 
 const SignUp = () => {
@@ -34,34 +34,29 @@ const SignUp = () => {
     try {
       await signUpSchema.parseAsync(formData);
       setErrors({});
-
-      const response = await axios.post(
-        API_ENDPOINTS.USER_CHECK_SIGNUP,
-        formData
-      );
-      console.log("response:", response);
+      // todo: react query
+      await axios.post(API_ENDPOINTS.USER_SIGNUP, formData);
       toast({
         title: "Succès",
         description: "Vous allez recevoir un email de validation",
       });
-      setFormData({} as SignUpFormData);
-      console.log("User created successfully");
-    } catch (error: any) {
+      setFormData({
+        email: "",
+        password: "",
+        confirmPassword: "",
+      });
+    } catch (error) {
       if (error instanceof z.ZodError) {
         const fieldErrors = error.flatten().fieldErrors;
         setErrors(fieldErrors as unknown as Record<string, string>);
-        toast({
-          title: "Erreur",
-          description: "Veuillez vérifier à nouveau les champs",
-          variant: "destructive",
-        });
-      } else {
-        console.log(error.response.data);
-        toast({
-          title: error.response.data.error,
-          description: "Une erreur inattendue s'est produite",
-          variant: "destructive",
-        });
+      } else if (axios.isAxiosError(error) && error.response) {
+        const axiosError = error as AxiosError<{ error: string }>;
+        setErrors((prev) => ({
+          ...prev,
+          auth:
+            axiosError.response?.data?.error ||
+            "Une erreur inconnue est survenue.",
+        }));
       }
     } finally {
       setIsPending(false);
@@ -72,7 +67,7 @@ const SignUp = () => {
     <div className="min-h-screen flex items-center justify-center bg-gray-900">
       <div className="bg-gray-800 p-10 rounded-lg shadow-xl w-96">
         <h1 className="text-white text-2xl mb-5">Inscription</h1>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} method="POST">
           <input
             id="email"
             type="email"
@@ -118,6 +113,7 @@ const SignUp = () => {
           >
             {isPending ? "Inscription ..." : "S'inscrire"}
           </button>
+          {errors.auth && <p className="text-red-500">{errors.auth}</p>}
         </form>
       </div>
     </div>

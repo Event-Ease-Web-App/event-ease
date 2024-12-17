@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { auth } from "@/lib/firebase";
+import { auth } from "@/firebase/config";
 import { signOut } from "firebase/auth";
 import { useRouter } from "next/navigation";
 
