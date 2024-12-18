@@ -7,7 +7,6 @@ import { useRouter } from "next/navigation";
 
 export default function Home() {
   const [user] = useAuthState(auth);
-  console.log({ user });
   const router = useRouter();
   if (!user) {
     router.push("/auth/connexion");
