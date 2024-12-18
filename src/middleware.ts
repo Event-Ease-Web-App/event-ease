@@ -1,7 +1,7 @@
-import { recaptchaValidation } from "@/middleware/recaptchaValidation";
-import { sendErrorResponse } from "@/middleware/responseHandler";
+import { recaptchaValidation } from "@/middlewares/recaptchaValidation";
+import { sendErrorResponse } from "@/middlewares/responseHandler";
 import { NextRequest, NextResponse } from "next/server";
-import { formFieldsValidation } from "./middleware/formFieldsValidation";
+import { formFieldsValidation } from "./middlewares/formFieldsValidation";
 import { GetSignUpInput } from "./lib/schemas/forms";
 
 export async function middleware(req: NextRequest) {
