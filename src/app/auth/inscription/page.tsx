@@ -1,124 +1,89 @@
 "use client";
 import { useState } from "react";
-import { z } from "zod";
-import { useToast } from "@/hooks/use-toast";
-import { SignUpFormData } from "@/types/forms";
-import axios, { AxiosError } from "axios";
-import { API_ENDPOINTS } from "@/constants/api";
 import { useGoogleReCaptcha } from "react-google-recaptcha-v3";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { GetSignUpInput, SignUpInput } from "@/lib/schemas/forms";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { fetchRegisterUser } from "@/lib/auth";
 
-const SignUp = () => {
-  const [errors, setErrors] = useState<Record<string, string>>({});
-  const [formData, setFormData] = useState<SignUpFormData>({
-    email: "",
-    password: "",
-    confirmPassword: "",
-    gReCaptchaToken: "",
-  });
-  const [isPending, setIsPending] = useState(false);
-  const { toast } = useToast();
+const SignUpForm = () => {
+  const [submittedForm, setIsSubmittedForm] = useState<boolean>(false);
+  const [isFormSuccess, setIsFormSuccess] = useState<boolean>(false);
+  const [formResultMessage, setFormResultMessage] = useState<string>("");
+  const [isPending, setIsPending] = useState<boolean>(false);
   const { executeRecaptcha } = useGoogleReCaptcha();
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<SignUpInput>({
+    resolver: zodResolver(GetSignUpInput()),
+    defaultValues: {
+      email: "",
+      password: "",
+      confirmPassword: "",
+    },
+  });
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const onSubmit: SubmitHandler<SignUpInput> = async (data) => {
+    setIsPending(true);
+    setIsSubmittedForm(true);
+
     if (!executeRecaptcha) {
       console.log("Execute recaptcha not available yet");
       return;
     }
+    const gReCaptchaToken = await executeRecaptcha("signupForm");
+    const response = await fetchRegisterUser(data, gReCaptchaToken);
+    console.log(response);
+    setIsFormSuccess(response.success);
 
-    setErrors({});
-    setIsPending(true);
-
-    try {
-      //await signUpSchema.parseAsync(formData);
-      setErrors({});
-
-      const gReCaptchaToken = await executeRecaptcha("signupForm");
-
-      // todo: react query
-      await axios.post(API_ENDPOINTS.USER_SIGNUP, formData, {
-        headers: {
-          "g-recaptcha-token": gReCaptchaToken,
-        },
-      });
-
-      toast({
-        title: "Succès",
-        description: "Vous allez recevoir un email de validation",
-      });
-      setFormData({
-        email: "",
-        password: "",
-        confirmPassword: "",
-        gReCaptchaToken: "",
-      });
-    } catch (error) {
-      if (error instanceof z.ZodError) {
-        const fieldErrors = error.flatten().fieldErrors;
-        setErrors(fieldErrors as unknown as Record<string, string>);
-      } else if (axios.isAxiosError(error) && error.response) {
-        const axiosError = error as AxiosError<{ error: string }>;
-        setErrors((prev) => ({
-          ...prev,
-          auth:
-            axiosError.response?.data?.error ||
-            "Une erreur inconnue est survenue.",
-        }));
-      }
-    } finally {
-      setIsPending(false);
-    }
+    setFormResultMessage(response.message);
+    setIsPending(false);
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-900">
       <div className="bg-gray-800 p-10 rounded-lg shadow-xl w-96">
         <h1 className="text-white text-2xl mb-5">Inscription</h1>
-        <form onSubmit={handleSubmit} method="POST">
+        <form onSubmit={handleSubmit(onSubmit)}>
           <input
             id="email"
             type="email"
             placeholder="Email"
-            name="email"
             className="w-full p-3 mb-4 bg-gray-700 rounded outline-none text-white placeholder-gray-500"
-            value={formData.email}
-            onChange={handleChange}
             required
+            {...register("email")}
           />
-          {errors.email && <p className="text-red-500">{errors.email}</p>}
+          {errors.email && (
+            <p className="text-sm text-red-500">{errors.email.message}</p>
+          )}
 
           <input
             id="password"
             type="password"
-            name="password"
             placeholder="Password"
             className="w-full p-3 mb-4 bg-gray-700 rounded outline-none text-white placeholder-gray-500"
-            value={formData.password}
-            onChange={handleChange}
             required
+            {...register("password")}
           />
-          {errors.password && <p className="text-red-500">{errors.password}</p>}
+          {errors.password && (
+            <p className="text-sm text-red-500">{errors.password.message}</p>
+          )}
 
           <input
             id="confirmPassword"
             type="password"
-            name="confirmPassword"
             placeholder="Confirm Password"
             className="w-full p-3 mb-4 bg-gray-700 rounded outline-none text-white placeholder-gray-500"
-            value={formData.confirmPassword}
-            onChange={handleChange}
             required
+            {...register("confirmPassword")}
           />
           {errors.confirmPassword && (
-            <p className="text-red-500">{errors.confirmPassword}</p>
+            <p className="text-sm text-red-500">
+              {errors.confirmPassword.message}
+            </p>
           )}
 
           <button
@@ -128,11 +93,15 @@ const SignUp = () => {
           >
             {isPending ? "Inscription ..." : "S'inscrire"}
           </button>
-          {errors.auth && <p className="text-red-500">{errors.auth}</p>}
+          {submittedForm && formResultMessage && (
+            <p className={isFormSuccess ? "text-green-500" : "text-red-500"}>
+              {formResultMessage}
+            </p>
+          )}
         </form>
       </div>
     </div>
   );
 };
 
-export default SignUp;
+export default SignUpForm;

@@ -10,6 +10,8 @@ const specialCharacterErrorMessage =
   "Le mot de passe doit contenir au moins un caractère spécial parmi ! @ # $ % ^ & *";
 const confirmPasswordErrorMessage = "Les mots de passe ne correspondent pas";
 
+const emailSchema = z.string().email({ message: invalidEmailErrorMessage });
+
 const passwordSchema = z
   .string()
   .min(8, { message: minLengthErrorMessage })
@@ -19,18 +21,24 @@ const passwordSchema = z
     message: specialCharacterErrorMessage,
   });
 
-export const signUpSchema = z
-  .object({
-    email: z.string().email({ message: invalidEmailErrorMessage }),
+export const GetSignUpInput = () =>
+  z
+    .object({
+      email: emailSchema,
+      password: passwordSchema,
+      confirmPassword: z.string(),
+    })
+    .refine((values) => values.password === values.confirmPassword, {
+      message: confirmPasswordErrorMessage,
+      path: ["confirmPassword"],
+    });
+
+export type SignUpInput = z.infer<ReturnType<typeof GetSignUpInput>>;
+
+export const GetSignInInput = () =>
+  z.object({
+    email: emailSchema,
     password: passwordSchema,
-    confirmPassword: z.string(),
-  })
-  .refine((values) => values.password === values.confirmPassword, {
-    message: confirmPasswordErrorMessage,
-    path: ["confirmPassword"],
   });
 
-export const signInSchema = z.object({
-  email: z.string().email({ message: invalidEmailErrorMessage }),
-  password: passwordSchema,
-});
+export type SignInInput = z.infer<ReturnType<typeof GetSignInInput>>;

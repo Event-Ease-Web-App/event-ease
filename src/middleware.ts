@@ -6,7 +6,7 @@ export async function middleware(req: NextRequest) {
   const gReCaptchaToken = req.headers.get("g-recaptcha-token");
   if (!gReCaptchaToken) {
     return NextResponse.json(
-      { error: "Missing reCAPTCHA token" },
+      { message: "Missing reCAPTCHA token" },
       { status: 400 }
     );
   }
