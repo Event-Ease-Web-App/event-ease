@@ -1,11 +1,11 @@
 "use client";
 import { useState } from "react";
-import { signUpSchema } from "@/lib/validation";
 import { z } from "zod";
 import { useToast } from "@/hooks/use-toast";
 import { SignUpFormData } from "@/types/forms";
 import axios, { AxiosError } from "axios";
 import { API_ENDPOINTS } from "@/constants/api";
+import { useGoogleReCaptcha } from "react-google-recaptcha-v3";
 
 const SignUp = () => {
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -13,9 +13,11 @@ const SignUp = () => {
     email: "",
     password: "",
     confirmPassword: "",
+    gReCaptchaToken: "",
   });
   const [isPending, setIsPending] = useState(false);
   const { toast } = useToast();
+  const { executeRecaptcha } = useGoogleReCaptcha();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -27,15 +29,27 @@ const SignUp = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!executeRecaptcha) {
+      console.log("Execute recaptcha not available yet");
+      return;
+    }
 
     setErrors({});
     setIsPending(true);
 
     try {
-      await signUpSchema.parseAsync(formData);
+      //await signUpSchema.parseAsync(formData);
       setErrors({});
+
+      const gReCaptchaToken = await executeRecaptcha("signupForm");
+
       // todo: react query
-      await axios.post(API_ENDPOINTS.USER_SIGNUP, formData);
+      await axios.post(API_ENDPOINTS.USER_SIGNUP, formData, {
+        headers: {
+          "g-recaptcha-token": gReCaptchaToken,
+        },
+      });
+
       toast({
         title: "Succès",
         description: "Vous allez recevoir un email de validation",
@@ -44,6 +58,7 @@ const SignUp = () => {
         email: "",
         password: "",
         confirmPassword: "",
+        gReCaptchaToken: "",
       });
     } catch (error) {
       if (error instanceof z.ZodError) {

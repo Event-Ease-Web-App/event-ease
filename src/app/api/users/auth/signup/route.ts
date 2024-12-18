@@ -2,30 +2,51 @@ import {
   createUserWithEmailAndPassword,
   sendEmailVerification,
 } from "firebase/auth";
-import { auth } from "@/firebase/config";
+import { auth, db } from "@/firebase/config";
 import { NextResponse } from "next/server";
 import { SignUpFormData } from "@/types/forms";
 import { formFieldsValidation } from "@/middleware/formFieldsValidation";
 import { signUpSchema } from "@/lib/validation";
 import { FirebaseError } from "firebase/app";
 import { handleFirebaseError } from "@/firebase/handleFirebaseErrors";
+import { collection, doc, setDoc } from "firebase/firestore";
+import { COLLECTIONS } from "@/firebase/constants";
+import { APP_ROLES } from "@/constants/env";
+import { recaptchaValidation } from "@/middleware/recaptchaValidation";
 
 export async function POST(req: Request) {
   try {
     const form: SignUpFormData = await req.json();
-    const validationError = await formFieldsValidation(req, form, signUpSchema);
-    if (validationError.status !== 200) return validationError;
+    const { email, password, confirmPassword } = form;
+    const fieldsToCheck = { email, password, confirmPassword };
+    // const validationError = await formFieldsValidation(
+    //   req,
+    //   fieldsToCheck,
+    //   signUpSchema
+    // );
+    // if (validationError.status !== 200) return validationError;
 
-    const { email, password } = form;
+    // const userCredentials = await createUserWithEmailAndPassword(
+    //   auth,
+    //   email,
+    //   password
+    // );
+    // const user = userCredentials.user;
+    // await sendEmailVerification(user);
 
-    const userCredentials = await createUserWithEmailAndPassword(
-      auth,
-      email,
-      password
+    // const usersRef = collection(db, COLLECTIONS.USERS);
+    // await setDoc(doc(usersRef, user.uid), {
+    //   email: email,
+    //   createdAt: new Date(),
+    //   updatedAt: new Date(),
+    //   role: APP_ROLES.ADMIN,
+    // });
+    return NextResponse.json(
+      {
+        test: "test",
+      },
+      { status: 201 }
     );
-    const user = userCredentials.user;
-    await sendEmailVerification(user);
-    console.log(user.email);
 
     return NextResponse.json(
       {
