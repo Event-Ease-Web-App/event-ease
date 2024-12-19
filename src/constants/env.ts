@@ -26,3 +26,7 @@ export const APP_ROLES = {
   ORGANISATEUR: process.env.ORGANISATEUR_ROLE,
   PARTICIPANT: process.env.PARTICIPANT_ROLE,
 };
+
+export const API_ENV = {
+  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
+};

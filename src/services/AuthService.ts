@@ -1,4 +1,4 @@
-import { AuthRepository } from "@/app/repository/AuthRepository";
+import { AuthRepository } from "@/repository/AuthRepository";
 import { handleFirebaseError } from "@/firebase/handleFirebaseErrors";
 import { FirebaseError } from "firebase/app";
 
