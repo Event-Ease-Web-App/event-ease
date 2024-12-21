@@ -1,16 +1,13 @@
 import { API_ENDPOINTS } from "@/constants/api";
-import axios from "axios";
 import { SignUpInput } from "./schemas/forms";
+import { SignUpResponse } from "@/types/auth";
+import { api } from "./api-client";
 
-type SignUpResponse = {
-  message: string;
-  success: boolean;
-};
 export const fetchRegisterUser = async (
   formData: SignUpInput,
   gReCaptchaToken: string
 ): Promise<SignUpResponse> => {
-  return await axios
+  return api
     .post(API_ENDPOINTS.USER_SIGNUP, formData, {
       headers: {
         "g-recaptcha-token": gReCaptchaToken,

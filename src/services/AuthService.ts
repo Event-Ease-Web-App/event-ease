@@ -6,14 +6,16 @@ export class AuthService {
   _authRepository = new AuthRepository();
 
   _manageUserRegister = async (req: Request) => {
-    const { email, password } = await req.json();
+    const { email, password, role } = await req.json();
     try {
-      const user = await this._authRepository._registerUser({
+      const user = await this._authRepository._registerUserInFireAuth({
         email,
         password,
       });
       await this._authRepository._sendEmailVerification(user);
-      await this._authRepository._createFirestoreUserFromAuthUser(user);
+      await this._authRepository._createFirestoreUserFromAuthUser(user, {
+        role: role,
+      });
       return { status: 201 };
     } catch (error) {
       if (error instanceof FirebaseError) {

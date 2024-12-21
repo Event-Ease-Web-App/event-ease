@@ -1,6 +1,9 @@
 import { auth, db } from "@/firebase/config";
 import { COLLECTIONS } from "@/firebase/constants";
-import { RegisterUser } from "@/types/auth";
+import {
+  RegisterUserFieldsInFirestore,
+  RegisterUserInFireAuth,
+} from "@/types/auth";
 import {
   createUserWithEmailAndPassword,
   sendEmailVerification,
@@ -9,7 +12,10 @@ import {
 import { collection, doc, setDoc } from "firebase/firestore";
 
 export class AuthRepository {
-  _registerUser = async ({ email, password }: RegisterUser) => {
+  _registerUserInFireAuth = async ({
+    email,
+    password,
+  }: RegisterUserInFireAuth) => {
     const userCredentials = await createUserWithEmailAndPassword(
       auth,
       email,
@@ -21,10 +27,15 @@ export class AuthRepository {
     await sendEmailVerification(user);
   };
 
-  _createFirestoreUserFromAuthUser = async (user: User) => {
+  _createFirestoreUserFromAuthUser = async (
+    user: User,
+    data: RegisterUserFieldsInFirestore
+  ) => {
+    const { role } = data;
     const usersRef = collection(db, COLLECTIONS.USERS);
     await setDoc(doc(usersRef, user.uid), {
       email: user.email,
+      role: role,
       createdAt: new Date(),
       updatedAt: new Date(),
     });

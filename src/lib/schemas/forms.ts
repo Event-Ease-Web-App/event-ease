@@ -1,3 +1,4 @@
+import { UserRoles } from "@/types/auth";
 import { z } from "zod";
 
 const invalidEmailErrorMessage = "L'adresse email est invalide";
@@ -21,12 +22,17 @@ const passwordSchema = z
     message: specialCharacterErrorMessage,
   });
 
+const roleSchema = z.enum([UserRoles.PARTICIPANT, UserRoles.ORGANIZER], {
+  message: "Rôle invalide",
+});
+
 export const GetSignUpInput = () =>
   z
     .object({
       email: emailSchema,
       password: passwordSchema,
       confirmPassword: z.string(),
+      role: roleSchema,
     })
     .refine((values) => values.password === values.confirmPassword, {
       message: confirmPasswordErrorMessage,
@@ -39,6 +45,7 @@ export const GetSignInInput = () =>
   z.object({
     email: emailSchema,
     password: passwordSchema,
+    role: roleSchema,
   });
 
 export type SignInInput = z.infer<ReturnType<typeof GetSignInInput>>;

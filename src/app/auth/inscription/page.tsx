@@ -5,11 +5,13 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { GetSignUpInput, SignUpInput } from "@/lib/schemas/forms";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { fetchRegisterUser } from "@/lib/auth";
+import { UserRoles, UserSignUpRoles } from "@/types/auth";
 
 const SignUpForm = () => {
   const [submittedForm, setIsSubmittedForm] = useState<boolean>(false);
   const [isFormSuccess, setIsFormSuccess] = useState<boolean>(false);
   const [formResultMessage, setFormResultMessage] = useState<string>("");
+  const [role, setRole] = useState<UserSignUpRoles>(UserRoles.PARTICIPANT);
   const [isPending, setIsPending] = useState<boolean>(false);
   const { executeRecaptcha } = useGoogleReCaptcha();
 
@@ -17,18 +19,21 @@ const SignUpForm = () => {
     register,
     handleSubmit,
     formState: { errors },
+    setValue,
   } = useForm<SignUpInput>({
     resolver: zodResolver(GetSignUpInput()),
     defaultValues: {
       email: "",
       password: "",
       confirmPassword: "",
+      role: UserRoles.PARTICIPANT,
     },
   });
 
   const onSubmit: SubmitHandler<SignUpInput> = async (data) => {
     setIsPending(true);
     setIsSubmittedForm(true);
+    setFormResultMessage("");
 
     if (!executeRecaptcha) {
       console.log("Execute recaptcha not available yet");
@@ -42,12 +47,34 @@ const SignUpForm = () => {
     setFormResultMessage(response.message);
     setIsPending(false);
   };
+  const handleRoleChange = (newRole: UserSignUpRoles) => {
+    setRole(newRole);
+    setValue("role", newRole); // Mise à jour de la valeur dans React Hook Form
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-900">
       <div className="bg-gray-800 p-10 rounded-lg shadow-xl w-96">
         <h1 className="text-white text-2xl mb-5">Inscription</h1>
         <form onSubmit={handleSubmit(onSubmit)}>
+          <button
+            type="button"
+            className={
+              role === UserRoles.PARTICIPANT || role === undefined
+                ? "text-pink-400"
+                : ""
+            }
+            onClick={() => handleRoleChange(UserRoles.PARTICIPANT)}
+          >
+            Participant
+          </button>
+          <button
+            type="button"
+            className={role === UserRoles.ORGANIZER ? "text-pink-400" : ""}
+            onClick={() => handleRoleChange(UserRoles.ORGANIZER)}
+          >
+            Organisateur
+          </button>
           <input
             id="email"
             type="email"
@@ -85,7 +112,7 @@ const SignUpForm = () => {
               {errors.confirmPassword.message}
             </p>
           )}
-
+          <input type="hidden" value={role} />
           <button
             type="submit"
             disabled={isPending}
@@ -93,6 +120,9 @@ const SignUpForm = () => {
           >
             {isPending ? "Inscription ..." : "S'inscrire"}
           </button>
+          {errors.role && (
+            <p className="text-sm text-red-500">{errors.role.message}</p>
+          )}
           {submittedForm && formResultMessage && (
             <p className={isFormSuccess ? "text-green-500" : "text-red-500"}>
               {formResultMessage}
