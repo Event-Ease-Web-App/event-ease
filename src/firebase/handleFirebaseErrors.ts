@@ -30,6 +30,9 @@ export const handleFirebaseError = (error: FirebaseError) => {
     case "auth/operation-not-allowed":
       errorMessage = "Cette opération n'est pas autorisée.";
       break;
+    case "auth/invalid-credential":
+      errorMessage = "Email ou mot de passe invalide.";
+      break;
     default:
       errorMessage = "Une erreur inconnue est survenue.";
       break;

@@ -1,6 +1,10 @@
-export type RegisterUserInFireAuth = {
+export type AuthWithEmailAndPassword = {
   email: string;
   password: string;
+};
+export type AuthWithEmailAndRole = {
+  email: string;
+  role: UserRoles;
 };
 export type RegisterUserFieldsInFirestore = {
   role: UserRoles;
@@ -11,9 +15,19 @@ export enum UserRoles {
   PARTICIPANT = "participant",
   ORGANIZER = "organizer",
 }
-export type UserSignUpRoles = UserRoles.PARTICIPANT | UserRoles.ORGANIZER;
 
-export type SignUpResponse = {
+export type UserSignInOrSignUpRoles =
+  | UserRoles.PARTICIPANT
+  | UserRoles.ORGANIZER;
+
+export type SignInOrSignUpResponse = {
   message: string;
   success: boolean;
+};
+
+export type FirestoreUser = {
+  email: string;
+  role: UserRoles;
+  createdAt: Date;
+  updatedAt: Date;
 };
