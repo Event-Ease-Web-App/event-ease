@@ -3,7 +3,12 @@ import { auth } from "@/firebase/config";
 import { handleFirebaseError } from "@/firebase/handleFirebaseErrors";
 import { AuthWithEmailAndPassword } from "@/types/auth";
 import { FirebaseError } from "firebase/app";
-import { signInWithEmailAndPassword, User } from "firebase/auth";
+import {
+  GoogleAuthProvider,
+  signInWithEmailAndPassword,
+  signInWithPopup,
+  User,
+} from "firebase/auth";
 import React, {
   createContext,
   useContext,
@@ -22,6 +27,11 @@ interface AuthContextType {
     message?: string;
   }>;
   signOut: () => Promise<void>;
+  signInWithGoogle: () => Promise<{
+    success: boolean;
+    user?: User;
+    message?: string;
+  }>;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -32,6 +42,10 @@ const AuthContext = createContext<AuthContextType>({
     message: "signInUser non implémenté",
   }),
   signOut: async () => {},
+  signInWithGoogle: async () => ({
+    success: false,
+    message: "signInWithGoogle non implémenté",
+  }),
 });
 
 export const useAuth = () => useContext(AuthContext);
@@ -92,7 +106,21 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setCurrentUser(null);
   };
 
-  const value = { currentUser, loading, signInUser, signOut };
+  const signInWithGoogle = async () => {
+    const provider = new GoogleAuthProvider();
+    try {
+      const result = await signInWithPopup(auth, provider);
+      GoogleAuthProvider.credentialFromResult(result);
+      return { success: true, user: result.user };
+    } catch (error) {
+      console.error(error);
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+      return { success: false, message: errorMessage };
+    }
+  };
+
+  const value = { currentUser, loading, signInUser, signOut, signInWithGoogle };
 
   return (
     <AuthContext.Provider value={value}>
