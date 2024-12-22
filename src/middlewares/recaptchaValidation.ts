@@ -22,7 +22,7 @@ export async function fetchRecaptchaValidateURL(gReCaptchaToken: string) {
       },
     });
 
-    return data.success;
+    return data.success && data.score > 0.5;
   } catch (error) {
     console.error("An error occurred on Recaptcha validation", error);
     return false;

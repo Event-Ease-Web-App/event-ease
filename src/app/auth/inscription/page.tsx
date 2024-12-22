@@ -5,13 +5,16 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { GetSignUpInput, SignUpInput } from "@/lib/schemas/forms";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { fetchRegisterUser } from "@/lib/auth";
-import { UserRoles, UserSignUpRoles } from "@/types/auth";
+import { UserRoles, UserSignInOrSignUpRoles } from "@/types/auth";
+import Link from "next/link";
 
 const SignUpForm = () => {
   const [submittedForm, setIsSubmittedForm] = useState<boolean>(false);
   const [isFormSuccess, setIsFormSuccess] = useState<boolean>(false);
   const [formResultMessage, setFormResultMessage] = useState<string>("");
-  const [role, setRole] = useState<UserSignUpRoles>(UserRoles.PARTICIPANT);
+  const [role, setRole] = useState<UserSignInOrSignUpRoles>(
+    UserRoles.PARTICIPANT
+  );
   const [isPending, setIsPending] = useState<boolean>(false);
   const { executeRecaptcha } = useGoogleReCaptcha();
 
@@ -36,20 +39,20 @@ const SignUpForm = () => {
     setFormResultMessage("");
 
     if (!executeRecaptcha) {
-      console.log("Execute recaptcha not available yet");
+      console.log("Le recaptcha n'est pas encore accessible");
       return;
     }
     const gReCaptchaToken = await executeRecaptcha("signupForm");
     const response = await fetchRegisterUser(data, gReCaptchaToken);
-    console.log(response);
     setIsFormSuccess(response.success);
 
     setFormResultMessage(response.message);
     setIsPending(false);
   };
-  const handleRoleChange = (newRole: UserSignUpRoles) => {
+
+  const handleRoleChange = (newRole: UserSignInOrSignUpRoles) => {
     setRole(newRole);
-    setValue("role", newRole); // Mise à jour de la valeur dans React Hook Form
+    setValue("role", newRole);
   };
 
   return (
@@ -129,6 +132,7 @@ const SignUpForm = () => {
             </p>
           )}
         </form>
+        <Link href="/auth/connexion">Se connecter</Link>
       </div>
     </div>
   );
