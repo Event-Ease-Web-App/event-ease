@@ -1,6 +1,8 @@
 "use client";
 import { auth } from "@/firebase/config";
+import { handleFirebaseError } from "@/firebase/handleFirebaseErrors";
 import { AuthWithEmailAndPassword } from "@/types/auth";
+import { FirebaseError } from "firebase/app";
 import { signInWithEmailAndPassword, User } from "firebase/auth";
 import React, {
   createContext,
@@ -69,6 +71,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       return { success: true, user: userCredentials.user };
     } catch (error) {
       console.error(error);
+      if (error instanceof FirebaseError) {
+        const handledFirebaseError = handleFirebaseError(error);
+        console.log(handledFirebaseError);
+        return {
+          message: handledFirebaseError,
+          success: false,
+        };
+      }
       const errorMessage =
         error instanceof Error ? error.message : String(error);
       return { success: false, message: errorMessage };

@@ -48,16 +48,21 @@ const SignInPage = () => {
     const gReCaptchaToken = await executeRecaptcha("signInForm");
 
     const response = await fetchSignInUser(data, gReCaptchaToken);
-    const signInResult = await signInUser({
-      email: data.email,
-      password: data.password,
-    });
-
-    if (signInResult.success) {
-      router.replace("/");
-    } else {
+    if (!response.success) {
       setIsFormFailure(response.success);
       setFormResultMessage(response.message);
+    } else {
+      const signInResult = await signInUser({
+        email: data.email,
+        password: data.password,
+      });
+
+      if (signInResult.success) {
+        router.replace("/");
+      } else {
+        setIsFormFailure(response.success);
+        setFormResultMessage(response.message);
+      }
     }
     setIsPending(false);
   };
