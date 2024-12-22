@@ -19,6 +19,7 @@ interface AuthContextType {
     user?: User;
     message?: string;
   }>;
+  signOut: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -28,6 +29,7 @@ const AuthContext = createContext<AuthContextType>({
     success: false,
     message: "signInUser non implémenté",
   }),
+  signOut: async () => {},
 });
 
 export const useAuth = () => useContext(AuthContext);
@@ -75,8 +77,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
+  const signOut = async () => {
+    await auth.signOut();
+    setCurrentUser(null);
+  };
+
+  const value = { currentUser, loading, signInUser, signOut };
+
   return (
-    <AuthContext.Provider value={{ currentUser, loading, signInUser }}>
+    <AuthContext.Provider value={value}>
       {!loading && children}
     </AuthContext.Provider>
   );

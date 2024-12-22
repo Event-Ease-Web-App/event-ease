@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useGoogleReCaptcha } from "react-google-recaptcha-v3";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { GetSignInInput, SignInInput } from "@/lib/schemas/forms";
@@ -20,13 +20,7 @@ const SignInPage = () => {
   const [isPending, setIsPending] = useState<boolean>(false);
   const { executeRecaptcha } = useGoogleReCaptcha();
   const router = useRouter();
-  const { currentUser, signInUser } = useAuth();
-
-  useEffect(() => {
-    if (currentUser) {
-      router.push("/");
-    }
-  }, [router, currentUser]);
+  const { signInUser } = useAuth();
 
   const {
     register,
