@@ -1,0 +1,49 @@
+:root {
+    /* Couleurs principales */
+    --primary: 200, 100%, 50%;
+    /* Bleu clair */
+    --primary-foreground: 0, 0%, 100%;
+
+    --secondary: 330, 100%, 50%;
+    /* Rose vif */
+    --secondary-foreground: 0, 0%, 100%;
+
+    --accent: 300, 100%, 50%;
+    /* Magenta */
+    --accent-foreground: 0, 0%, 100%;
+
+    /* Couleurs complémentaires */
+    --neutral: 0, 0%, 90%;
+    /* Gris clair */
+    --neutral-foreground: 0, 0%, 10%;
+
+    --background: 0, 0%, 100%;
+    /* Blanc */
+    --foreground: 0, 0%, 0%;
+    /* Noir */
+}
+
+.dark {
+    /* Couleurs principales (sombre) */
+    --primary: 200, 100%, 40%;
+    /* Bleu foncé */
+    --primary-foreground: 0, 0%, 90%;
+
+    --secondary: 330, 100%, 40%;
+    /* Rose foncé */
+    --secondary-foreground: 0, 0%, 90%;
+
+    --accent: 300, 100%, 40%;
+    /* Magenta foncé */
+    --accent-foreground: 0, 0%, 90%;
+
+    /* Couleurs complémentaires (sombre) */
+    --neutral: 0, 0%, 20%;
+    /* Gris foncé */
+    --neutral-foreground: 0, 0%, 90%;
+
+    --background: 0, 0%, 10%;
+    /* Noir */
+    --foreground: 0, 0%, 100%;
+    /* Blanc */
+}
